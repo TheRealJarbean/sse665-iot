@@ -1,4 +1,6 @@
-var mysql = require('mysql');
+const express = requre('express');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
 
 var con = mysql.createConnection({
     host: "",
