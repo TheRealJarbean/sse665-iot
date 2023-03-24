@@ -28,10 +28,10 @@
         <!-- Pills content -->
         <div class="tab-content">
             <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
-                <form>
-                    <!-- Email input -->
+                <form action="http://localhost:8080/login" method="POST">
+                    <!-- Username input -->
                     <div class="form-outline mb-4">
-                        <input type="username" id="loginName" class="form-control" />
+                        <input type="username" id="loginUsername" class="form-control" />
                         <label class="form-label" for="loginName">Username</label>
                     </div>
 
@@ -46,13 +46,7 @@
                 </form>
             </div>
             <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
-                <form>
-                    <!-- Name input -->
-                    <div class="form-outline mb-4">
-                        <input type="text" id="registerName" class="form-control" />
-                        <label class="form-label" for="registerName">Name</label>
-                    </div>
-
+                <form action="http://localhost:8080/register" method="POST">
                     <!-- Username input -->
                     <div class="form-outline mb-4">
                         <input type="text" id="registerUsername" class="form-control" />
@@ -81,5 +75,7 @@
 
     <!-- MDB -->
     <script src="js/mdb.min.js"></script>
+    <!-- Login Script -->
+    <script src="js/loginHandler.js"></script>
 </body>
 </html>
