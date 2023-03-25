@@ -87,7 +87,14 @@ app.post('/', (req, res) => {
                 if (err) {
                     console.log(`Error occurred in SQL request: ${err.message}`);
                 } else {
-                    if (result[0].Password === loginPassword) {
+                    if(result === "") {
+                        console.log("Account not found!");
+                        res.render('pages/login', {
+                            confirm: "Account with this username does not exist.",
+                            error: "",
+                            activeTab: "login"
+                        })
+                    } else if (result[0].Password === loginPassword) {
                         console.log("Redirecting to home page!");
                         session.username = loginUsername;
                         res.redirect("/");
