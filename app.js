@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function (req, res) {
     res.render('pages/login', {
+        confirm: "",
         error: "",
         activeTab: "login"
     });
@@ -68,6 +69,11 @@ app.post('/', (req, res) => {
                                         };
                                     }
                                 );
+                                res.render('pages/login', {
+                                    confirm: "Account successfully created",
+                                    error: "",
+                                    activeTab: "login"
+                                });
                             } else {
                                 console.log("Name already exists in database!");
                                 const errMessage = "Account with that name already exists.";
