@@ -28,11 +28,13 @@ app.post('/', (req, res) => {
     var loginPassword = req.body.loginPassword;
     var registerUsername = req.body.registerUsername;
     var registerPassword = req.body.registerPassword;
+    var registerRepeatPassword = req.body.registerRepeatPassword;
     console.log(`
         ${loginUsername}
         ${loginPassword}
         ${registerUsername}
         ${registerPassword}
+        ${registerRepeatPassword}
     `);
 
     const con = mysql.createConnection({
@@ -43,39 +45,48 @@ app.post('/', (req, res) => {
     })
 
     if (registerUsername) {
-        con.connect(function (err) {
-            if (err) {
-                console.log(`Error occurred in SQL connection: ${err.message}`);
-            };
-            console.log("Connected to database!");
-            con.query(
-                `SELECT * FROM \`Users\` WHERE \`Username\` = '${registerUsername}'`,
-                function (err, result) {
-                    if (err) {
-                        console.log(`Error occurred in SQL request: ${err.message}`);
-                    } else {
-                        if (result.length === 0) {
-                            con.query(
-                                `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
-                                function (err, result) {
-                                    if (err) {
-                                        console.log(`Error occurred in SQL request: ${err.message}`);
-                                    } else {
-                                        console.log(`Added new user ${registerUsername} to database!`);
-                                    };
-                                }
-                            );
+        if (registerPassword === registerRepeatPassword) {
+            con.connect(function (err) {
+                if (err) {
+                    console.log(`Error occurred in SQL connection: ${err.message}`);
+                };
+                console.log("Connected to database!");
+                con.query(
+                    `SELECT * FROM \`Users\` WHERE \`Username\` = '${registerUsername}'`,
+                    function (err, result) {
+                        if (err) {
+                            console.log(`Error occurred in SQL request: ${err.message}`);
                         } else {
-                            console.log("Name already exists in database!");
-                            const errMessage = "Account with that name already exists.";
-                            res.render('pages/login', {
-                                error: errMessage,
-                                activeTab: "register"
-                            });
+                            if (result.length === 0) {
+                                con.query(
+                                    `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
+                                    function (err, result) {
+                                        if (err) {
+                                            console.log(`Error occurred in SQL request: ${err.message}`);
+                                        } else {
+                                            console.log(`Added new user ${registerUsername} to database!`);
+                                        };
+                                    }
+                                );
+                            } else {
+                                console.log("Name already exists in database!");
+                                const errMessage = "Account with that name already exists.";
+                                res.render('pages/login', {
+                                    error: errMessage,
+                                    activeTab: "register"
+                                });
+                            };
                         };
-                    };
-                }
-            );
-        });
+                    }
+                );
+            });
+        } else {
+            console.log("Passwords do not match!");
+            const errMessage = "Passwords must match.";
+            res.render('pages/login', {
+                error: errMessage,
+                activeTab: "register"
+            });
+        }
     };
 })
