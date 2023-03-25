@@ -42,7 +42,25 @@ app.post('/', (req, res) => {
             if (err) {
                 console.log(`Error occurred in SQL connection: ${err.message}`);
             };
-            console.log("Connected!");
+            console.log("Connected to database!");
+            var nameExists;
+            con.query(
+                `SELECT * FROM \`Users\` WHERE \`Username\` = '${registerUsername}'`,
+                function (err, result) {
+                    if (err) {
+                        console.log(`Error occurred in SQL request: ${err.message}`);
+                    }
+                    else {
+                        if (result.length > 0) {
+                            nameExists = true;
+                        }
+                        else {
+                            nameExists = false;
+                        }
+                    }
+                };
+            );
+        if (!nameExists) {
             con.query(
                 `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
                 function (err, result) {
@@ -52,7 +70,11 @@ app.post('/', (req, res) => {
                     else {
                         console.log(`Added new user ${registerUsername} to database!`);
                     };
-                });
-        });
+                }
+            );
+        } else {
+
+        };
+    });
     }
 })
