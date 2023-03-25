@@ -3,12 +3,7 @@
 <html lang="en">
 
 <head>
-    <!-- Required MDB head -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/mdb.min.css" rel="stylesheet">
-    <!-- Required MDB head -->
+    <%- include('../partials/head'); %>
 </head>
 
 <body>
@@ -16,19 +11,21 @@
         <!-- Pills navs -->
         <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="tab-login" data-mdb-toggle="pill" href="#pills-login" role="tab"
-                    aria-controls="pills-login" aria-selected="true">Login</a>
+                <a class="nav-link <%= activeTab === 'login' ? 'active' : '' %>" id="tab-login" data-mdb-toggle="pill"
+                    href="#pills-login" role="tab" aria-controls="pills-login" aria-selected="false">Login</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab"
-                    aria-controls="pills-register" aria-selected="false">Register</a>
+                <a class="nav-link <%= activeTab === 'register' ? 'active' : '' %>" id="tab-register"
+                    data-mdb-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register"
+                    aria-selected="false">Register</a>
             </li>
         </ul>
         <!-- Pills navs -->
 
         <!-- Pills content -->
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+            <div class="tab-pane fade <%= activeTab === 'login' ? 'show active' : '' %>" id="pills-login"
+                role="tabpanel" aria-labelledby="tab-login">
                 <form action="/" method="POST">
                     <!-- Username input -->
                     <div class="form-outline mb-4">
@@ -46,7 +43,8 @@
                     <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
                 </form>
             </div>
-            <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+            <div class="tab-pane fade <%= activeTab === 'register' ? 'show active' : '' %>" id="pills-register"
+                role="tabpanel" aria-labelledby="tab-register">
                 <form action="/" method="POST">
                     <!-- Username input -->
                     <div class="form-outline mb-4">
@@ -69,6 +67,11 @@
                     <!-- Submit button -->
                     <button type="submit" class="btn btn-primary btn-block mb-3">Sign in</button>
                 </form>
+
+                <!-- Placeholder for error if username exists or password does not match -->
+                <div id="error-placeholder">
+                    <%- error %>
+                </div>
             </div>
         </div>
     </div>
