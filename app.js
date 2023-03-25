@@ -4,12 +4,17 @@ const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const app = express();
 const port = 8080;
-var loginUsername;
-var loginPassword;
-var registe
 
-app.use(express.static('/var/www/html/sse665'));
+app.use(express.static(__dirname));
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get('/', function (req, res) {
+    res.render('pages/login', {
+        error: "",
+        activeTab: "login"
+    });
+})
 
 var server = app.listen(port, function () {
     var host = server.address().address;
@@ -19,7 +24,6 @@ var server = app.listen(port, function () {
 })
 
 app.post('/', (req, res) => {
-
     var loginUsername = req.body.loginUsername;
     var loginPassword = req.body.loginPassword;
     var registerUsername = req.body.registerUsername;
@@ -44,41 +48,34 @@ app.post('/', (req, res) => {
                 console.log(`Error occurred in SQL connection: ${err.message}`);
             };
             console.log("Connected to database!");
-            var nameExists;
             con.query(
                 `SELECT * FROM \`Users\` WHERE \`Username\` = '${registerUsername}'`,
                 function (err, result) {
                     if (err) {
                         console.log(`Error occurred in SQL request: ${err.message}`);
-                    }
-                    else {
-                        if (result.length > 0) {
-                            nameExists = true;
+                    } else {
+                        if (result.length === 0) {
+                            con.query(
+                                `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
+                                function (err, result) {
+                                    if (err) {
+                                        console.log(`Error occurred in SQL request: ${err.message}`);
+                                    } else {
+                                        console.log(`Added new user ${registerUsername} to database!`);
+                                    };
+                                }
+                            );
+                        } else {
                             console.log("Name already exists in database!");
-                        }
-                        else {
-                            nameExists = false;
-                        }
-                    }
+                            const errMessage = "Account with that name already exists.";
+                            res.render('pages/login', {
+                                error: errMessage,
+                                activeTab: "register"
+                            });
+                        };
+                    };
                 }
             );
-            if (!nameExists) {
-                con.query(
-                    `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
-                    function (err, result) {
-                        if (err) {
-                            console.log(`Error occurred in SQL request: ${err.message}`);
-                        }
-                        else {
-                            console.log(`Added new user ${registerUsername} to database!`);
-                        };
-                    }
-                );
-            } else {
-                const errMessage = "Account with that name already exists.";
-                const renderedContent = ejs.render(`<h1><%= ${errMessage}%></h1>`)
-                res.render('template', { content: renderedContent });
-            };
         });
     };
 })
