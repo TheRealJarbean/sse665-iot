@@ -1,4 +1,6 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
@@ -8,13 +10,37 @@ const port = 8080;
 app.use(express.static(__dirname));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(sessions({
+    secret: "Thisismysupersecretsecret",
+    saveUninitialized: true,
+    cookie: { maxAge: oneDay },
+    resave: true
+}));
+
+var session;
 
 app.get('/', function (req, res) {
-    res.render('pages/login', {
-        confirm: "",
-        error: "",
-        activeTab: "login"
-    });
+    session=req.session;
+    if(session.username) {
+        res.render('pages/home', {
+            user: session.username
+        });
+    } else {
+        res.render('pages/login', {
+            confirm: "",
+            error: "",
+            activeTab: "login"
+        });
+    };
+})
+
+app.get('/logout', function (req, res) {
+    session=req.session;
+    session.destroy();
+    res.redirect('/');
 })
 
 var server = app.listen(port, function () {
@@ -38,6 +64,8 @@ app.post('/', (req, res) => {
         ${registerRepeatPassword}
     `);
 
+    session = req.session;
+
     const con = mysql.createConnection({
         host: "104.196.22.212",
         user: "sse665-app",
@@ -45,7 +73,36 @@ app.post('/', (req, res) => {
         database: "sse665-iot"
     })
 
-    if (registerUsername) {
+    if (loginUsername) {
+        con.connect(function (err) {
+            if (err) {
+                console.log(`Error occurred in SQL connection: ${err.message}`);
+            };
+        })
+        console.log("Connected to database!");
+        con.query(
+            `SELECT \`Password\` FROM \`Users\` WHERE \`Username\` = '${loginUsername}'`,
+            function (err, result) {
+                console.log(result[0].Password);
+                if (err) {
+                    console.log(`Error occurred in SQL request: ${err.message}`);
+                } else {
+                    if (result[0].Password === loginPassword) {
+                        console.log("Redirecting to home page!");
+                        session.username = loginUsername;
+                        res.redirect("/");
+                    } else {
+                        console.log("Password incorrect!");
+                        res.render('pages/login', {
+                            confirm: "Password is incorrect.",
+                            error: "",
+                            activeTab: "login"
+                        })
+                    };
+                };
+            }
+        );
+    } else if (registerUsername) {
         if (registerPassword === registerRepeatPassword) {
             con.connect(function (err) {
                 if (err) {
