@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const ejs = require('ejs');
 const app = express();
 const port = 8080;
 var loginUsername;
@@ -53,28 +54,31 @@ app.post('/', (req, res) => {
                     else {
                         if (result.length > 0) {
                             nameExists = true;
+                            console.log("Name already exists in database!");
                         }
                         else {
                             nameExists = false;
                         }
                     }
-                };
-            );
-        if (!nameExists) {
-            con.query(
-                `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
-                function (err, result) {
-                    if (err) {
-                        console.log(`Error occurred in SQL request: ${err.message}`);
-                    }
-                    else {
-                        console.log(`Added new user ${registerUsername} to database!`);
-                    };
                 }
             );
-        } else {
-
-        };
-    });
-    }
+            if (!nameExists) {
+                con.query(
+                    `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
+                    function (err, result) {
+                        if (err) {
+                            console.log(`Error occurred in SQL request: ${err.message}`);
+                        }
+                        else {
+                            console.log(`Added new user ${registerUsername} to database!`);
+                        };
+                    }
+                );
+            } else {
+                const errMessage = "Account with that name already exists.";
+                const renderedContent = ejs.render(`<h1><%= ${errMessage}%></h1>`)
+                res.render('template', { content: renderedContent });
+            };
+        });
+    };
 })
