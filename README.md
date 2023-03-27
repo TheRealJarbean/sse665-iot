@@ -1,1 +1,1 @@
-## IoT App for SSE665
+## IoTility (Project for SSE665)
