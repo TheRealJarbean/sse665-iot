@@ -5,12 +5,13 @@
     <%- include('../partials/head'); %>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <%- include('../partials/navbar'); %>
-    <div class="p-5 text-center bg-light">
-        <h1 class="mb-3">Welcome back <%- user%>.</h1>
+    <div class="my-auto text-center bg-light">
+        <h1 class="mb-3">Welcome back, <%- user%>.</h1>
         <h3 class="mb-3">
             <a href="/logout">Logout</a>
         </h3>
     </div>
+    <%- include('../partials/footer'); %>
 </body>
