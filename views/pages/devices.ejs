@@ -14,9 +14,14 @@
         $(document).ready( function() {
             $("#search").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
+                if (value.length > 0) {
+                    $("#device-list li h3").filter(function() {
+                        return $(this).text().toLowerCase().indexOf(value) === -1
+                    }).parent().parent().removeClass("d-flex").addClass("d-none")
+                }
                 $("#device-list li h3").filter(function() {
-                    $(this).parent().toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
+                    return $(this).text().toLowerCase().indexOf(value) !== -1
+                }).parent().parent().removeClass("d-none").addClass("d-flex")
             });
         });
     </script>
@@ -25,16 +30,54 @@
 <body class="d-flex flex-column min-vh-100 bg-light">
     <%- include('../partials/navbar'); %>
     <div class="mb-auto">
-        <h1 class="text-center pt-3"><%= user %>'s Devices</h1>
+        <h3 class="text-center pt-3"><%= user %>'s Devices</h1>
         <div class="input-group w-25 mx-auto">
-            <input id="search" type="text" class="form-control" placeholder="Search...">
+            <select class="form-select" id="deviceSearch">
+                <option selected>Any Room</option>
+                <% for(var i = 0; i < rooms.length; i++) { %>
+                <option value="<%- rooms[i].name %>"><%- rooms[i].name %></option>
+                <% } %>
+            </select>
+            <input id="search" type="text" class="form-control w-50" for="deviceSearch" placeholder="Search...">
         </div>
         <div class="device-list">
             <ul id="device-list">
                 <% for(var i = 0; i < devices.length; i++) { %>
-                <li>
-                    <h3><%= devices[i].name %></h3>
-                    <p class="device-desc"><%= devices[i].description %></p>
+                <li class="d-flex flex-column">
+                    <div class="text-center">
+                        <h3><%= devices[i].name %></h3>
+                        <p class="device-room"><%= devices[i].room %></p>
+                    </div>
+                    <% switch(devices[i].type) {
+                    case "rgbLight": %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
+                        <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4l0 0c19.8 27.1 39.7 54.4 49.2 86.2H272zM192 512c44.2 0 80-35.8 80-80V416H112v16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z"/></svg>
+                        <div class="my-auto">
+                            <input class="p-0 mx-auto form-control form-control-color" type="color" id="favcolor" name="favcolor" value="#ff0000">
+                        </div>
+                    <% break;
+                    case "whiteLight": %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
+                        <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4l0 0c19.8 27.1 39.7 54.4 49.2 86.2H272zM192 512c44.2 0 80-35.8 80-80V416H112v16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z"/></svg>
+                        <div class="m-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                        </div>
+                    <% break;
+                    case "toggle": %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
+                        <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path d="M96 0C78.3 0 64 14.3 64 32v96h64V32c0-17.7-14.3-32-32-32zM288 0c-17.7 0-32 14.3-32 32v96h64V32c0-17.7-14.3-32-32-32zM32 160c-17.7 0-32 14.3-32 32s14.3 32 32 32v32c0 77.4 55 142 128 156.8V480c0 17.7 14.3 32 32 32s32-14.3 32-32V412.8C297 398 352 333.4 352 256V224c17.7 0 32-14.3 32-32s-14.3-32-32-32H32z"/></svg>
+                        <div class="m-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                        </div>
+                    <% break;
+                    } %>
                 </li>
                 <% } %>
             </ul>

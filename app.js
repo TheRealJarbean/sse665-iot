@@ -97,12 +97,19 @@ app.get('/devices', function (req, res) {
         return
     }
 
+    // TODO: Make devices list from database query
     devices = [
-        {name: "MyDevice", description: "mydescription"}
+        {name: "Bedroom Lamp", room: "Bedroom", type: "rgbLight"},
+        {name: "Dining Room", room: "Dining Room", type: "whiteLight"},
+        {name: "Desktop Fan", room: "Office", type: "toggle"}
     ]
+
+    // TODO: Make rooms list from database query
+    rooms = [{name: "bedroom"}, {name: "office"}]
     res.render('pages/devices', {
         page: page,
-        user: session.username
+        user: session.username,
+        rooms: rooms
     })
 })
 
