@@ -49,11 +49,13 @@ var session;
 
 app.get('/', (req, res) => {
     var session = req.session
+    page = req.originalUrl
     if (typeof session.username === 'undefined') {
         res.redirect('/login')
         return
     }
     res.render('pages/home', {
+        page: page,
         user: session.username
     })
 })
