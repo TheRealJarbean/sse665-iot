@@ -9,9 +9,10 @@
     <%- include('../partials/navbar'); %>
     <div class="my-auto text-center">
         <h1 class="mb-3">Welcome back, <%- user%>.</h1>
-        <h3 class="mb-3">
-            <a href="/logout">Logout</a>
-        </h3>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDevice">
+            Launch demo modal
+        </button>
     </div>
     <%- include('../partials/footer'); %>
 </body>
