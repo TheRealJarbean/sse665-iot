@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head'); %>
+
+    <link rel='stylesheet' href='/css/devices.css' type="text/css">
+  
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Search filtering -->
+    <script>
+        $(document).ready( function() {
+            $("#search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#device-list li h3").filter(function() {
+                    $(this).parent().toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <%- include('../partials/navbar'); %>
+    <div class="mb-auto">
+        <h1 class="text-center pt-3"><%= user %>'s Devices</h1>
+        <div class="input-group w-25 mx-auto">
+            <input id="search" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <div class="device-list">
+            <ul id="device-list">
+                <% for(var i = 0; i < devices.length; i++) { %>
+                <li>
+                    <h3><%= devices[i].name %></h3>
+                    <p class="device-desc"><%= devices[i].description %></p>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+    <%- include('../partials/footer'); %>
+</body>

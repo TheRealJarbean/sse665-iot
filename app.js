@@ -88,6 +88,24 @@ app.get('/logout', function (req, res) {
     res.redirect('/login');
 })
 
+app.get('/devices', function (req, res) {
+    var session = req.session
+    page = req.originalUrl
+
+    if (typeof session.username === 'undefined') {
+        res.redirect('/login')
+        return
+    }
+
+    devices = [
+        {name: "MyDevice", description: "mydescription"}
+    ]
+    res.render('pages/devices', {
+        page: page,
+        user: session.username
+    })
+})
+
 app.post('/login', (req, res) => {
     var session = req.session
     let loginUsername = req.body.loginUsername;
