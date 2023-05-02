@@ -7,13 +7,13 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-                <a class="nav-link <%= page === '/' ? "active" : "" %>" aria-current="page" href="#">Home</a>
+                <a class="nav-link <%= page === '/' ? "active" : "" %>" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <%= page === '/' ? "active" : "" %></a>" href="#">Devices</a>
+                <a class="nav-link <%= page === '/devices' ? "active" : "" %>" href="/devices">Devices</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"></a>
+                <a class="nav-link" href="/devices"><%- page %></a>
             </li>
             </ul>
             <span class="navbar-text", style="padding-right: 100px">
