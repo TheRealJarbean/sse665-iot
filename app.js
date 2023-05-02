@@ -2,14 +2,13 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const app = express();
 const port = 8080;
 
 app.use(express.static(__dirname));
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Start Node server
