@@ -1,0 +1,7 @@
+.tooltip, .tooltip-arrow {
+    padding-top: 20px;
+}
+
+.tooltip-inner {
+    font-size: 1.2em;
+}

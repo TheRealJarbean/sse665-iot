@@ -7,12 +7,16 @@
 
 <body class="d-flex flex-column min-vh-100 bg-light">
     <%- include('../partials/navbar'); %>
-    <div class="my-auto text-center">
+    <div class="m-auto pb-5 text-center">
         <h1 class="mb-3">Welcome back, <%- user%>.</h1>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDevice">
-            Launch demo modal
-        </button>
+        <p>Head to the Devices page to add a new device.</p>
     </div>
     <%- include('../partials/footer'); %>
+
+    <script>
+        $(document).ready( function() {
+            $('#devices-tab').tooltip({title:"Click here to get started!"})
+            $('#devices-tab').tooltip('show')
+        })
+    </script>
 </body>

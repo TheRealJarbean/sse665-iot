@@ -10,7 +10,9 @@
                 <a class="nav-link <%= page === '/' ? "active" : "" %>" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <%= page === '/devices' ? "active" : "" %>" href="/devices">Devices</a>
+                <a id="devices-tab" class="nav-link <%= page === '/devices' ? "active" : "" %>" href="/devices" data-bs-placement="bottom" data-bs-toggle="tooltip" title="">
+                    Devices
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/devices"><%- page %></a>
