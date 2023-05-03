@@ -252,7 +252,6 @@ app.post('/devices/create', (req, res) => {
     session = req.session;
     let userID = session.userID
     let brandID = req.body.brand;
-    let homeID = 1;
     let name = req.body.name;
     let type = req.body.type;
     let deviceStatus;
@@ -274,8 +273,8 @@ app.post('/devices/create', (req, res) => {
     }
 
     con.query(
-        `INSERT INTO devices (user_id, brand_id, home_id, name, type, current_status, room)
-        VALUES (${session.userID}, ${brandID}, ${1}, '${name}', '${type}', '${deviceStatus}', '${room}')`,
+        `INSERT INTO devices (user_id, brand_id, name, type, current_status, room)
+        VALUES (${session.userID}, ${brandID}, '${name}', '${type}', '${deviceStatus}', '${room}')`,
         (err, result) => {
             if (err) {
                 console.log(`Error occurred in SQL request: ${err.message}`);
@@ -286,4 +285,25 @@ app.post('/devices/create', (req, res) => {
             res.redirect('/devices')
         }
     )
+})
+
+app.get('devices/updateStatus/:deviceID/:newStatus', (req, res) => {
+    let deviceID = req.params.deviceID;
+    let newStatus = req.params.newStatus;
+
+    con.query(
+        `UPDATE devices
+        SET current_status = ${newStatus}
+        WHERE device_id = ${deviceID}`,
+        (err, result) => {
+            if (err) {
+                console.log(`Error occurred in SQL request: ${err.message}`);
+                return
+            }
+
+            console.log("Device status updated.")
+        }
+    )
+
+    res.redirect('/devices')
 })
