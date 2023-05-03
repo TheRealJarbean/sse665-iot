@@ -7,24 +7,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="deviceForm" class="needs-validation" novalidate action="/device/create" method="POST">
+                <form id="deviceForm" class="needs-validation" novalidate action="/devices/create" method="POST">
                     <div class="mb-3 form-group">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control device-form-element" id="name" placeholder="My New Device" required>
+                        <input type="text" class="form-control device-form-element" id="name" name="name" placeholder="My New Device" required>
                         <div class="invalid-feedback">
                             Please provide a device name.
                         </div>
                     </div>
                     <div class="mb-3 form-group">
                         <label for="room" class="form-label">Room</label>
-                        <input type="text" class="form-control" id="room" placeholder="Living Room" required>
+                        <input type="text" class="form-control" id="room" name="room" placeholder="Living Room" required>
                         <div class="invalid-feedback">
                             Please provide the room the device is in.
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="type" class="form-label">Type</label>
-                        <select class="form-select" aria-label="Device type field" id="type" required>
+                        <select class="form-select" aria-label="Device type field" id="type" name="type" required>
                             <option selected disabled value="">Please select a type...</option>
                             <option value="0">RGB Light</option>
                             <option value="1">White Light</option>
@@ -35,8 +35,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                    <label for="type" class="form-label">Brand</label>
-                        <select class="form-select" aria-label="Device type field" id="type" required>
+                    <label for="brand" class="form-label">Brand</label>
+                        <select class="form-select" aria-label="Device brand field" id="brand" name="brand" required>
                             <option selected disabled value="">Please select a brand...</option>
                             <option value="0">Google</option>
                             <option value="1">Wyze</option>
