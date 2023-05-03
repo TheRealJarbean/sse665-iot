@@ -1,3 +1,5 @@
+<!-- DESIGNED FOR USE ON THE DEVICES PAGE, MIGHT BREAK ELSEWHERE -->
+
 <!-- Modal -->
 <div class="modal fade" id="addDevice" tabindex="-1" aria-labelledby="addDeviceLabel" aria-hidden="true">
     <div class="modal-dialog" style="padding-top:100px">
@@ -22,29 +24,36 @@
                             Please provide the room the device is in.
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3 form-group">
                         <label for="type" class="form-label">Type</label>
                         <select class="form-select" aria-label="Device type field" id="type" name="type" required>
                             <option selected disabled value="">Please select a type...</option>
-                            <option value="0">RGB Light</option>
-                            <option value="1">White Light</option>
-                            <option value="2">Power Switch</option>
+                            <option value="rgbLight">RGB Light</option>
+                            <option value="whiteLight">White Light</option>
+                            <option value="toggle">Power Switch</option>
                         </select>
                         <div class="invalid-feedback">
                             Please select a type of device.
                         </div>
                     </div>
-                    <div class="form-group">
-                    <label for="brand" class="form-label">Brand</label>
+                    <div class="mb-3 form-group">
+                        <label for="brand" class="form-label">Brand</label>
                         <select class="form-select" aria-label="Device brand field" id="brand" name="brand" required>
                             <option selected disabled value="">Please select a brand...</option>
-                            <option value="0">Google</option>
-                            <option value="1">Wyze</option>
-                            <option value="2">Amazon</option>
-                            <option value="3">Samsung</option>
+                            <% brands.forEach((brand) => { %>
+                                <option value="<%- brand.brand_id %>"><%- brand.name.charAt(0).toUpperCase() + brand.name.slice(1) %></option>
+                            <% }) %>
                         </select>
                         <div class="invalid-feedback">
                             Please select a device brand.
+                        </div>
+                    </div>
+                    <div class="mb-3 form-group" id="api-key-div">
+                        <label for="room" class="form-label">API Key</label>
+                        <input type="text" class="form-control" id="api-key-input" name="api_key" aria-describedbyt="key-help" placeholder="iuwnv2899hf9834bv398bvivsjkvbns" required>
+                        <small id="key-help" class="form-text text-muted">Please provide an API key for the new device brand.</small>
+                        <div class="invalid-feedback">
+                            An API key is required to call device actions.
                         </div>
                     </div>
                 </form>

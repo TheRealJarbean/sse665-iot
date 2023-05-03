@@ -12,6 +12,8 @@
 
     <!-- Search and Filtering -->
     <script>
+        var registeredBrands = <%- JSON.stringify(registeredBrands) %>;
+
         function toggleItems() {
             var filterValue = $("#filter").val().toLowerCase();
             var searchValue = $("#search").val().toLowerCase();
@@ -32,6 +34,8 @@
         }
         
         $(document).ready( function() {
+            $("#api-key-div").hide();
+
             $("#search").on("keyup", function() {
                 toggleItems()
             });
@@ -39,6 +43,18 @@
             $("#filter").on("change", function() {
                 toggleItems()
             });
+
+            $("#brand").on("change", function() {
+                console.log("Changing brand!")
+                console.log(registeredBrands)
+                if ($.inArray(parseInt($("#brand").val()), registeredBrands) > -1) {
+                    $("#api-key-div").hide();
+                    $("#api-key-input").prop('required', false)
+                } else {
+                    $("#api-key-div").show();
+                    $("#api-key-input").prop('required', true)
+                }
+            })
         });
     </script>
 </head>
@@ -73,7 +89,7 @@
             <ul id="device-list">
                 <% for(var i = 0; i < devices.length; i++) { %>
                 <li class="d-flex flex-column pb-2 position-relative">
-                    <a href="/delete/<%- devices[i].id %>" class="link-secondary"><i id="delete" class="fa-solid fa-trash position-absolute start-0 top-0"></i></a>
+                    <a href="/delete/<%- devices[i].device_id %>" class="link-secondary"><i id="delete" class="fa-solid fa-trash position-absolute start-0 top-0"></i></a>
                     <div class="text-center">
                         <h3><%= devices[i].name %></h3>
                         <p class="device-room"><%= devices[i].room %></p>
@@ -109,7 +125,7 @@
                     <% break;
                     } %>
                     <div class="mx-auto mb-0 mt-0 text-center">
-                        <a href="/update/<%- devices[i].id %>" id="update" type="button"><i class="fa-solid fa-cloud-arrow-up" style="color: #11e462;"></i></a>
+                        <a href="/update/<%- devices[i].device_id %>" id="update" type="button"><i class="fa-solid fa-cloud-arrow-up" style="color: #11e462;"></i></a>
                     </div>
                 </li>
                 <% } %>

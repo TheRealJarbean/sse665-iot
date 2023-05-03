@@ -48,7 +48,7 @@ app.use(sessions({
 var session;
 
 app.get('/', (req, res) => {
-    var session = req.session
+    session = req.session
     page = req.originalUrl
     if (typeof session.username === 'undefined') {
         res.redirect('/login')
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-    var session = req.session
+    session = req.session
     if(session.username) {
         res.redirect('/')
     } else {
@@ -72,7 +72,7 @@ app.get('/login', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-    var session = req.session
+    session = req.session
     if (session.username) {
         res.redirect('/')
     } else {
@@ -83,38 +83,72 @@ app.get('/register', (req, res) => {
 })
 
 app.get('/logout', function (req, res) {
-    var session = req.session
+    session = req.session;
     session.destroy();
     res.redirect('/login');
 })
 
 app.get('/devices', function (req, res) {
-    var session = req.session
-    page = req.originalUrl
+    session = req.session;
+    page = req.originalUrl;
 
     if (typeof session.username === 'undefined') {
-        res.redirect('/login')
-        return
+        res.redirect('/login');
+        return;
     }
 
-    // TODO: Make devices list from database query
-    devices = [
-        {name: "Bedroom Lamp", room: "Bedroom", type: "rgbLight"},
-        {name: "Dining Room", room: "Dining Room", type: "whiteLight"},
-        {name: "Desktop Fan", room: "Office", type: "toggle"}
-    ]
+    console.log(session.userID)
 
-    // TODO: Make rooms list from database query
-    rooms = [{name: "bedroom"}, {name: "office"}]
-    res.render('pages/devices', {
-        page: page,
-        user: session.username,
-        rooms: rooms
-    })
+    con.query(
+        `SELECT device_id, brand_id, name, type, room 
+        FROM devices WHERE devices.user_id = '${session.userID}'`,
+        (err, result) => {
+            if (err) {
+                console.log(`Error occurred in SQL request: ${err.message}`);
+                return
+            }
+
+            console.log("Devices:", result);
+            let devices = result;
+            let rooms = devices.map(device => device.room);
+            let registeredBrands = devices.map(device => device.brand_id);
+            console.log("Registered Brands:", registeredBrands)
+
+            function onlyUnique(value, index, array) {
+                return array.indexOf(value) === index;
+            }
+
+            rooms = rooms.filter(onlyUnique);
+            registeredBrands = registeredBrands.filter(onlyUnique);
+
+            con.query(
+                `SELECT * FROM brands`,
+                (err, result) => {
+                    if (err) {
+                        console.log(`Error occurred in SQL request: ${err.message}`);
+                        return;
+                    }
+            
+                    let brands = result;
+                    console.log("Brands:", brands)
+
+                    // TODO: Make rooms list from database query
+                    res.render('pages/devices', {
+                        page: page,
+                        user: session.username,
+                        devices: devices,
+                        rooms: rooms,
+                        brands: brands,
+                        registeredBrands: registeredBrands
+                    })
+                }
+            )
+        }
+    )
 })
 
 app.post('/login', (req, res) => {
-    var session = req.session
+    session = req.session
     let loginUsername = req.body.loginUsername;
     let loginPassword = req.body.loginPassword;
     console.log(loginUsername)
@@ -122,13 +156,13 @@ app.post('/login', (req, res) => {
     console.log("Attempting login!")
 
     con.query(
-        `SELECT Password FROM Users WHERE Username = '${loginUsername}'`,
-        function (err, result) {
+        `SELECT user_id, password FROM users WHERE username = '${loginUsername}'`,
+        (err, result) => {
             if (err) {
                 console.log(`Error occurred in SQL request: ${err.message}`);
                 return
             }
-            console.log(result)
+
             if(result.length === 0) {
                 console.log("Account not found!");
                 let message = {
@@ -141,7 +175,8 @@ app.post('/login', (req, res) => {
                 });
                 return
             } 
-            if (!(result[0].Password === loginPassword)) {
+    
+            if (!(result[0].password === loginPassword)) {
                 console.log("Password incorrect!");
                 let message = {
                     color: "red",
@@ -155,19 +190,20 @@ app.post('/login', (req, res) => {
             }
 
             console.log("Redirecting to home page!");
+            session.userID = result[0].user_id
             session.username = loginUsername;
             res.redirect("/");
         }
-    );
+    )
 })
 
 app.post('/register', (req, res) => {
-    var session = req.session
+    session = req.session
     let registerUsername = req.body.registerUsername;
     let registerPassword = req.body.registerPassword;
 
     con.query(
-        `SELECT * FROM \`Users\` WHERE \`Username\` = '${registerUsername}'`,
+        `SELECT * FROM users WHERE username = '${registerUsername}'`,
         function (err, result) {
             if (err) {
                 console.log(`Error occurred in SQL request: ${err.message}`);
@@ -190,7 +226,7 @@ app.post('/register', (req, res) => {
             }
 
             con.query(
-                `INSERT INTO \`Users\`(\`Username\`, \`Password\`) VALUES ('${registerUsername}', '${registerPassword}')`,
+                `INSERT INTO users (username, password) VALUES ('${registerUsername}', '${registerPassword}')`,
                 function (err, result) {
                     if (err) {
                         console.log(`Error occurred in SQL request: ${err.message}`);
@@ -210,4 +246,44 @@ app.post('/register', (req, res) => {
             });
         }
     );
+})
+
+app.post('/devices/create', (req, res) => {
+    session = req.session;
+    let userID = session.userID
+    let brandID = req.body.brand;
+    let homeID = 1;
+    let name = req.body.name;
+    let type = req.body.type;
+    let deviceStatus;
+    let room = req.body.room;
+
+    // Room stored in Title case for nice display later
+    room = room.toLowerCase()
+        .split(' ')
+        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ');
+
+    // Set default state depending on type
+    // TODO: Use an actual API for this
+    if (type === "toggle" || type === "whiteLight") {
+        deviceStatus= "off";
+    }
+    else if (type === "rgbLight") {
+        deviceStatus = "#eb0800"; // Default color red
+    }
+
+    con.query(
+        `INSERT INTO devices (user_id, brand_id, home_id, name, type, current_status, room)
+        VALUES (${session.userID}, ${brandID}, ${1}, '${name}', '${type}', '${deviceStatus}', '${room}')`,
+        (err, result) => {
+            if (err) {
+                console.log(`Error occurred in SQL request: ${err.message}`);
+                return
+            }
+
+            console.log("New device added!")
+            res.redirect('/devices')
+        }
+    )
 })
