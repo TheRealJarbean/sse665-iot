@@ -254,6 +254,7 @@ app.post('/devices/create', (req, res) => {
     let type = req.body.type;
     let deviceStatus;
     let room = req.body.room;
+    let api_key = req.body.api_key;
 
     // Room stored in Title case for nice display later
     room = room.toLowerCase()
@@ -278,11 +279,25 @@ app.post('/devices/create', (req, res) => {
                 console.log(`Error occurred in SQL request: ${err.message}`);
                 return
             }
-
             console.log("New device added!")
             res.redirect('/devices')
         }
     )
+
+    if (api_key != "") {
+        con.query(
+            `INSERT INTO api_keys (user_id, brand_id, api_key)
+            VALUES (${userID}, ${brandID}, '${api_key}')`,
+            (err, result) => {
+                if (err) {
+                    console.log(`Error occurred in SQL request: ${err.message}`);
+                    return
+                }    
+
+                console.log("API key added.")
+            }
+        )
+    }
 })
 
 app.get('/devices/updateStatus/:deviceID/:newStatus', (req, res) => {
@@ -307,12 +322,60 @@ app.get('/devices/updateStatus/:deviceID/:newStatus', (req, res) => {
 })
 
 app.get('/devices/delete/:deviceID', (req, res) => {
+    session = req.session
+    let userID = session.userID
     let deviceID = req.params.deviceID;
 
     con.query(
         `DELETE FROM devices where device_id = '${deviceID}'`,
         (err, result) => {
+            if (err) {
+                console.log(`Error occurred in SQL request: ${err.message}`);
+                return
+            }
             console.log(`Device ${deviceID} has been deleted.`)
+        }
+    )
+
+    con.query(
+        `SELECT brands.brand_id
+        FROM brands
+        LEFT JOIN (
+          SELECT devices.brand_id
+          FROM devices
+          WHERE devices.user_id = ${userID}
+        ) AS user_brands ON brands.brand_id = user_brands.brand_id
+        WHERE user_brands.brand_id IS NULL`,
+        (err, result) => {
+            if (err) {
+                console.log(`Error occurred in SQL request line 351: ${err.message}`);
+                return
+            }
+
+            let unownedBrands = result.map(row => row.brand_id);
+            console.log(unownedBrands)
+
+            str = "(";
+            for(let i = 0; i < unownedBrands.length; i++) {
+                if (i < unownedBrands.length - 1) {
+                    str = str + unownedBrands[i] + ", "
+                } else {
+                    str += unownedBrands[i]
+                }
+            }
+            str += ")"
+            console.log(str)
+            con.query(
+                `DELETE FROM api_keys WHERE brand_id IN ${str}`,
+                (err, result) => {
+                    if (err) {
+                        console.log(`Error occurred in SQL request line 370: ${err.message}`);
+                        return
+                    }
+
+                    console.log("API Key Deletion")
+                }
+            )
         }
     )
 
