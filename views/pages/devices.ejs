@@ -9,19 +9,34 @@
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    <!-- Search filtering -->
+    <!-- Search and Filtering -->
     <script>
+        function toggleItems() {
+            var filterValue = $("#filter").val().toLowerCase();
+            var searchValue = $("#search").val().toLowerCase();
+
+            $("#device-list .device-room").parent().parent().removeClass("d-none").addClass("d-flex")
+
+            if (searchValue.length > 0) {
+                $("#device-list li h3").filter(function() {
+                    return $(this).text().toLowerCase().indexOf(searchValue) === -1
+                }).parent().parent().removeClass("d-flex").addClass("d-none")
+            }
+
+            if (filterValue != "any room") {
+                $("#device-list li p").filter(function() {
+                    return $(this).text().toLowerCase().indexOf(filterValue) === -1
+                }).parent().parent().removeClass("d-flex").addClass("d-none")
+            }
+        }
+        
         $(document).ready( function() {
             $("#search").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                if (value.length > 0) {
-                    $("#device-list li h3").filter(function() {
-                        return $(this).text().toLowerCase().indexOf(value) === -1
-                    }).parent().parent().removeClass("d-flex").addClass("d-none")
-                }
-                $("#device-list li h3").filter(function() {
-                    return $(this).text().toLowerCase().indexOf(value) !== -1
-                }).parent().parent().removeClass("d-none").addClass("d-flex")
+                toggleItems()
+            });
+
+            $("#filter").on("change", function() {
+                toggleItems()
             });
         });
     </script>
@@ -32,13 +47,13 @@
     <div class="mb-auto">
         <h3 class="text-center pt-3"><%= user %>'s Devices</h1>
         <div class="input-group w-25 mx-auto">
-            <select class="form-select" id="deviceSearch">
+            <select class="form-select" id="filter">
                 <option selected>Any Room</option>
                 <% for(var i = 0; i < rooms.length; i++) { %>
                 <option value="<%- rooms[i].name %>"><%- rooms[i].name %></option>
                 <% } %>
             </select>
-            <input id="search" type="text" class="form-control w-50" for="deviceSearch" placeholder="Search...">
+            <input id="search" type="text" class="form-control w-50" for="filter" placeholder="Search by name...">
         </div>
         <div class="device-list">
             <ul id="device-list">
