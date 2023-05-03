@@ -108,7 +108,7 @@
                         <select class="form-select" id="filter">
                             <option selected>Any Room</option>
                             <% for(var i = 0; i < rooms.length; i++) { %>
-                            <option value="<%- rooms[i].name %>"><%- rooms[i].name %></option>
+                            <option value="<%- rooms[i] %>"><%- rooms[i] %></option>
                             <% } %>
                         </select>
                         <input id="search" type="text" class="form-control w-50" for="filter" placeholder="Search by name...">
@@ -127,7 +127,7 @@
             <ul id="device-list">
                 <% for(var i = 0; i < devices.length; i++) { %>
                 <li class="d-flex flex-column pb-2 position-relative">
-                    <a href="/delete/<%- devices[i].device_id %>" class="link-secondary"><i id="delete" class="fa-solid fa-trash position-absolute start-0 top-0"></i></a>
+                    <a href="/devices/delete/<%- devices[i].device_id %>" class="link-secondary"><i id="delete" class="fa-solid fa-trash position-absolute start-0 top-0"></i></a>
                     <div class="text-center" id="<%- devices[i].device_id %>">
                         <h3><%= devices[i].name %></h3>
                         <p class="device-room"><%= devices[i].room %></p>

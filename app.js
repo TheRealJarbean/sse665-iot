@@ -117,6 +117,7 @@ app.get('/devices', function (req, res) {
             }
 
             rooms = rooms.filter(onlyUnique);
+            console.log("Rooms:", rooms)
             registeredBrands = registeredBrands.filter(onlyUnique);
 
             con.query(
@@ -299,6 +300,19 @@ app.get('/devices/updateStatus/:deviceID/:newStatus', (req, res) => {
             }
 
             console.log("Device status updated.")
+        }
+    )
+
+    res.redirect('/devices')
+})
+
+app.get('/devices/delete/:deviceID', (req, res) => {
+    let deviceID = req.params.deviceID;
+
+    con.query(
+        `DELETE FROM devices where device_id = '${deviceID}'`,
+        (err, result) => {
+            console.log(`Device ${deviceID} has been deleted.`)
         }
     )
 
