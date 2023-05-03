@@ -10,6 +10,9 @@
     <!-- Devices Page CSS -->
     <link rel='stylesheet' href='/css/devices.css' type="text/css">
 
+    <!-- Bootstrap Switch JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
     <!-- Search and Filtering -->
     <script>
         var registeredBrands = <%- JSON.stringify(registeredBrands) %>;
@@ -60,6 +63,24 @@
                 toggleItems();
             });
 
+            $(".uploader").on("click", function() {
+                let status;
+                console.log("Upload clicked!");
+                if ($(this).parent().parent().children(".switch-div").children(".switch-div").children(".device-switch").length > 0) {
+                        status = $(this).parent().parent().children(".switch-div").children(".switch-div").children(".device-switch").is(':checked')
+                } else {
+                    status = $(this).parent().parent().children(".switch-div").children(".device-attribute").val().slice(1)
+                }
+                console.log(status)
+                let id = $(this).parent().parent().children("div").first().attr('id');
+                
+                let path = "/devices/updateStatus/" + id + "/" + status
+
+                console.log(path)
+                
+                window.location.href = path;
+            })
+
             function allowUploadButton() {
                 $(".device-attribute").on("change", function() {
                     if (allowUploadButton) {
@@ -70,7 +91,7 @@
             }
 
             $(function() {
-                setTimeout(allowUploadButton, 500);
+                setTimeout(allowUploadButton, 250);
             });
         });
     </script>
@@ -107,7 +128,7 @@
                 <% for(var i = 0; i < devices.length; i++) { %>
                 <li class="d-flex flex-column pb-2 position-relative">
                     <a href="/delete/<%- devices[i].device_id %>" class="link-secondary"><i id="delete" class="fa-solid fa-trash position-absolute start-0 top-0"></i></a>
-                    <div class="text-center">
+                    <div class="text-center" id="<%- devices[i].device_id %>">
                         <h3><%= devices[i].name %></h3>
                         <p class="device-room"><%= devices[i].room %></p>
                     </div>
@@ -116,17 +137,17 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
                         <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                         <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4l0 0c19.8 27.1 39.7 54.4 49.2 86.2H272zM192 512c44.2 0 80-35.8 80-80V416H112v16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z"/></svg>
-                        <div class="mt-auto mb-3">
-                            <input class="p-0 mx-auto form-control form-control-color device-attribute" type="color" id="favcolor" name="favcolor" value="#ff0000">
+                        <div class="mt-auto mb-3 switch-div">
+                            <input class="p-0 mx-auto form-control form-control-color device-attribute" type="color" id="favcolor" name="favcolor" value="#<%=  devices[i].current_status %>">
                         </div>
                     <% break;
                     case "whiteLight": %>
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
                         <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                         <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4l0 0c19.8 27.1 39.7 54.4 49.2 86.2H272zM192 512c44.2 0 80-35.8 80-80V416H112v16c0 44.2 35.8 80 80 80zM112 176c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-61.9 50.1-112 112-112c8.8 0 16 7.2 16 16s-7.2 16-16 16c-44.2 0-80 35.8-80 80z"/></svg>
-                        <div class="my-auto">
-                            <div class="form-check form-switch mx-auto">
-                                <input class="form-check-input device-attribute" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <div class="my-auto switch-div">
+                            <div class="form-check form-switch mx-auto switch-div">
+                                <input class="form-check-input device-attribute device-switch" type="checkbox" role="switch" id="flexSwitchCheckDefault" <%= devices[i].current_status === "true" ? "checked" : "" %>>
                             </div>
                         </div>
                     <% break;
@@ -134,15 +155,15 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 384 512">
                         <!-- Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                         <path d="M96 0C78.3 0 64 14.3 64 32v96h64V32c0-17.7-14.3-32-32-32zM288 0c-17.7 0-32 14.3-32 32v96h64V32c0-17.7-14.3-32-32-32zM32 160c-17.7 0-32 14.3-32 32s14.3 32 32 32v32c0 77.4 55 142 128 156.8V480c0 17.7 14.3 32 32 32s32-14.3 32-32V412.8C297 398 352 333.4 352 256V224c17.7 0 32-14.3 32-32s-14.3-32-32-32H32z"/></svg>
-                        <div class="my-auto">
-                            <div class="form-check form-switch mx-auto">
-                                <input class="form-check-input device-attribute" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <div class="my-auto switch-div">
+                            <div class="form-check form-switch mx-auto switch-div">
+                                <input class="form-check-input device-attribute device-switch" type="checkbox" role="switch" id="flexSwitchCheckDefault" <%= devices[i].current_status === "true" ? "checked" : "" %>>
                             </div>
                         </div>
                     <% break;
                     } %>
                     <div class="mx-auto text-center position-absolute end-0 bottom-0" id="upload" style="display:none;">
-                        <a href="/devices/updateStatus/<%- devices[i].device_id %>" type="button"><i class="fa-solid fa-cloud-arrow-up" style="color: #11e462;"></i></a>
+                        <a type="button" class="uploader"><i class="fa-solid fa-cloud-arrow-up" style="color: #11e462;"></i></a>
                     </div>
                 </li>
                 <% } %>

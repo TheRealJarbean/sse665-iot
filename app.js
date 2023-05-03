@@ -100,7 +100,7 @@ app.get('/devices', function (req, res) {
     console.log(session.userID)
 
     con.query(
-        `SELECT device_id, brand_id, name, type, room 
+        `SELECT device_id, brand_id, name, type, current_status, room 
         FROM devices WHERE devices.user_id = '${session.userID}'`,
         (err, result) => {
             if (err) {
@@ -108,11 +108,9 @@ app.get('/devices', function (req, res) {
                 return
             }
 
-            console.log("Devices:", result);
             let devices = result;
             let rooms = devices.map(device => device.room);
             let registeredBrands = devices.map(device => device.brand_id);
-            console.log("Registered Brands:", registeredBrands)
 
             function onlyUnique(value, index, array) {
                 return array.indexOf(value) === index;
@@ -130,7 +128,6 @@ app.get('/devices', function (req, res) {
                     }
             
                     let brands = result;
-                    console.log("Brands:", brands)
 
                     // TODO: Make rooms list from database query
                     res.render('pages/devices', {
@@ -287,13 +284,13 @@ app.post('/devices/create', (req, res) => {
     )
 })
 
-app.get('devices/updateStatus/:deviceID/:newStatus', (req, res) => {
+app.get('/devices/updateStatus/:deviceID/:newStatus', (req, res) => {
     let deviceID = req.params.deviceID;
     let newStatus = req.params.newStatus;
 
     con.query(
         `UPDATE devices
-        SET current_status = ${newStatus}
+        SET current_status = '${newStatus}'
         WHERE device_id = ${deviceID}`,
         (err, result) => {
             if (err) {
