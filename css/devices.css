@@ -68,6 +68,7 @@
 .icon {
   width: 100%;
   height: 50%;
+  padding-bottom: 5px;
   vertical-align: -.125em;
 }
 
@@ -82,6 +83,17 @@
 }
 
 .device-list .form-control-color {
-  height: 30px;
+  height: 25px;
   width: 50%
+}
+
+#update {
+  padding-bottom: 1px;
+  padding-top: 1px;
+  font-size: 1em;
+}
+
+#delete {
+  padding-left: 7px;
+  padding-top: 7px
 }
