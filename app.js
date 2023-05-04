@@ -129,8 +129,7 @@ app.get('/devices', function (req, res) {
                     }
             
                     let brands = result;
-
-                    // TODO: Make rooms list from database query
+                    
                     res.render('pages/devices', {
                         page: page,
                         user: session.username,
