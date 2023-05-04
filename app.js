@@ -268,7 +268,7 @@ app.post('/devices/create', (req, res) => {
         deviceStatus= "off";
     }
     else if (type === "rgbLight") {
-        deviceStatus = "#eb0800"; // Default color red
+        deviceStatus = "eb0800"; // Default color red
     }
 
     con.query(
