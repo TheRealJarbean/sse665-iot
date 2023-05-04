@@ -1,0 +1,33 @@
+`SELECT device_id, brand_id, name, type, current_status, room 
+FROM devices WHERE devices.user_id = '${session.userID}'`
+
+`SELECT * FROM brands`
+
+`SELECT user_id, password FROM users WHERE username = '${loginUsername}'`
+
+`SELECT * FROM users WHERE username = '${registerUsername}'`
+
+`INSERT INTO users (username, password) VALUES ('${registerUsername}', '${registerPassword}')`
+
+`INSERT INTO devices (user_id, brand_id, name, type, current_status, room)
+VALUES (${session.userID}, ${brandID}, '${name}', '${type}', '${deviceStatus}', '${room}')`
+
+`INSERT INTO api_keys (user_id, brand_id, api_key)
+VALUES (${userID}, ${brandID}, '${api_key}')`
+
+`UPDATE devices
+SET current_status = '${newStatus}'
+WHERE device_id = ${deviceID}`
+
+`DELETE FROM devices where device_id = '${deviceID}'`
+
+`SELECT brands.brand_id
+FROM brands
+LEFT JOIN (
+    SELECT devices.brand_id
+    FROM devices
+    WHERE devices.user_id = ${userID}
+) AS user_brands ON brands.brand_id = user_brands.brand_id
+WHERE user_brands.brand_id IS NULL`
+
+`DELETE FROM api_keys WHERE brand_id IN ${str}`
